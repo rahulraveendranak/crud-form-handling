@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Article;
+use Validator;
 
 class ArticlesController extends Controller
 {
@@ -13,7 +15,8 @@ class ArticlesController extends Controller
      */
     public function index()
     {
-        //
+        $articles = Article::latest()->get();
+        return view("articles.index",["articles"=>$articles]);
     }
 
     /**
@@ -23,7 +26,7 @@ class ArticlesController extends Controller
      */
     public function create()
     {
-        //
+        return view("articles.create");
     }
 
     /**
@@ -34,7 +37,18 @@ class ArticlesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        request()->validate([
+            'title'=>'required',
+            'body'=>'required'
+        ]);
+        // echo request("title");
+        $article = new Article();
+        $article->title = request("title");
+        $article->body = request("body");
+        $article->save();
+        // die;
+        return redirect("/articles");
     }
 
     /**
@@ -45,7 +59,8 @@ class ArticlesController extends Controller
      */
     public function show($id)
     {
-        //
+        $article = Article::find($id);
+        return view("articles.show", ["article"=>$article]);
     }
 
     /**
@@ -56,7 +71,8 @@ class ArticlesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $article = Article::find($id);
+        return view("articles.edit",["article"=>$article]);
     }
 
     /**
@@ -68,7 +84,11 @@ class ArticlesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $article = Article::find($id);
+        $article->title = request("title");
+        $article->body = request("body");
+        $article->save();
+        return redirect("/articles");
     }
 
     /**
@@ -79,6 +99,10 @@ class ArticlesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // echo 'reached';
+        $article = Article::find($id);
+        $article->delete();
+        return redirect("/articles");
+        // die;
     }
 }
